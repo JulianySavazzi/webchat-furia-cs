@@ -20,8 +20,15 @@ Projeto
 - Executar projeto:  
   - Iniciar o servidor vite e artisan: ``composer run dev``
   - Iniciar os containers docker com banco de dados e network: ``docker compose up -d``
+  - Iniciar o websocket com reverb: ``php artisan reverb:start``
 
 - Documentações utilizadas:
   - [Laravel reverb](https://laravel.com/docs/12.x/reverb)
   - [Laravel Sanctum](https://laravel.com/docs/12.x/sanctum)
   - [Laravel Socialite](https://laravel.com/docs/12.x/socialite)
+  - [Laravel Front-end](https://laravel.com/docs/12.x/frontend)
+  - [Laravel Broadcasting](https://laravel.com/docs/12.x/broadcasting)
+  - [Laravel Echo](https://github.com/laravel/echo)
+
+- Links úteis:
+  - [Get SteamId by profile](https://steamid.xyz/)

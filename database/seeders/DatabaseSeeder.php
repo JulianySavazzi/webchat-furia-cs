@@ -19,5 +19,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $this->call([
+            FuriaBotSeeder::class,
+        ]); //criar user furia_bot e team_furia_cs
     }
 }

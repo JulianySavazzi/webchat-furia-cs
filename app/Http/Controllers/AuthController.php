@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\MessageService;
+use App\Services\TeamService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,13 +15,21 @@ class AuthController extends Controller
 {
     /**
      * @param UserService $userService
+     * @param MessageService $messageService
      */
     public function __construct(
-        private readonly UserService $userService
+        protected readonly UserService $userService,
+        protected readonly MessageService $messageService
     )
     {
     }
 
+    /**
+     * ao se cadastrar com sucesso, o furia bot ja envia a mensagem de boas vindas
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -33,6 +43,7 @@ class AuthController extends Controller
         ]);
         try {
             $user = $this->userService->create($data);
+            $this->messageService->sendMessageByBot('user');
             return response()->json($user, Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao criar conta.', 'error' => $e->getMessage()],

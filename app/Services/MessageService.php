@@ -86,4 +86,26 @@ class MessageService
         $message->save();
         return $message;
     }
+
+    /**
+     * Utilizado pelo furia bot para enviar mensagens aos usuarios no privado ou na team
+     *
+     * @param string $case = se a mensagem sera enviada para um user ou team (default user)
+     * @param string $content = conteudo da mensagem
+     * @param int|null $id = pode passar o id do usuario especifico para enviar uma mensagem
+     * @return void
+     */
+    public function sendMessageByBot(string $case, string $content, ?int $id)
+    {
+        $data['content'] = $content;
+        switch ($case) {
+            case 'team':
+                $this->sendTeamMessage(1, $data);
+                break;
+            case 'user':
+            default:
+                $this->sendMessage($id, $data);
+                break;
+        }
+    }
 }

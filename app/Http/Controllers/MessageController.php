@@ -37,6 +37,8 @@ class MessageController extends Controller
     }
 
     /**
+     * usuario logado envia mensagem para outro usuario selecionado pelo id
+     *
      * @param int $userTo
      * @param Request $request
      * @return JsonResponse
@@ -56,6 +58,8 @@ class MessageController extends Controller
     }
 
     /**
+     * Listar todas as mensagens do grupo, inicialamente temos apenas o FURIA TEAM;
+     *
      * @param int $team
      * @param Request $request
      * @return JsonResponse
@@ -72,6 +76,8 @@ class MessageController extends Controller
     }
 
     /**
+     * usuario logado envia mensagens para o grupo, inicialmente temos apenas o FURIA TEAM;
+     *
      * @param int $team
      * @param Request $request
      * @return JsonResponse

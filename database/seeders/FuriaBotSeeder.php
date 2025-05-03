@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -43,5 +44,12 @@ class FuriaBotSeeder extends Seeder
                 'updated_at' => now()
             ]
         );
+
+        DB::table('teams_users')->insert([
+            'team_id' => 1,
+            'user_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 }

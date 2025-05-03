@@ -2,9 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\UserService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    //
+    /**
+     * @param UserService $userService
+     */
+    public function __construct(
+        private readonly UserService $userService
+    )
+    {
+    }
+
+    public function index(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'nullable|string|max:255',
+            'username' => 'nullable|string|max:255',
+            'steamid' => 'nullable|string|max:255',
+            'profile_url' => 'nullable|string|max:255',
+            'name' => 'nullable|string|max:255',
+        ]);
+        try {
+            $user = $this->userService->index($data);
+            return response()->json($user, Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erro ao listar usuaarios.', 'error' => $e->getMessage()],
+                Response::HTTP_BAD_REQUEST);
+        }
+    }
 }

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -55,5 +57,32 @@ class UserService
             $user->teams()->sync($data['teams']);
         }
         return $user;
+    }
+
+    /**
+     * listar todos os usuaarios cadastradoos, exceto usuario logado;
+     *
+     * @param array $data
+     * @return Collection
+     */
+    public function index(array $data)
+    {
+        $me = auth()->user();
+
+        return User::query()->with('teams')
+            ->whereNot('id', $me->id)
+            ->where(function ($query) use ($data) {
+                if (isset($data['name'])) {
+                    $query->where('name', 'like', '%' . strtolower($data['name']) . '%');
+                }
+                if (isset($data['email'])) {
+                    $query->where('email', 'like', '%' . strtolower($data['email']) . '%');
+                }
+                if (isset($data['username'])) {
+                    $query->where('username', 'like', '%' . strtolower($data['username']) . '%');
+                }
+            })
+            ->orderBy('id')
+            ->get();
     }
 }

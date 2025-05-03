@@ -15,12 +15,13 @@ Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::prefix('/user')->group(function () {
+        Route::get('/', [\App\Http\Controllers\UserController::class, 'index']);
         Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
     Route::prefix('/chat/messages')->group(function () {
-        Route::get('/{user-to}',[]); //TODO listar mensagens (conversas do auth user com outro user) - id-ser
-        Route::post('/{user-to}', []);//TODO enviar mensagem para outro user
-        Route::get('/team/{team}',[]); //TODO listar mensagens da team que estou - id-team
-        Route::post('/team/{team}', []);//TODO enviar mensagem na team
+        Route::get('/{userTo}',[\App\Http\Controllers\MessageController::class, 'listUsersMessages']);
+        Route::post('/{userTo}', [\App\Http\Controllers\MessageController::class, 'sendMessage']);
+        Route::get('/team/{team}',[\App\Http\Controllers\MessageController::class, 'listTeamMessages']);
+        Route::post('/team/{team}', [\App\Http\Controllers\MessageController::class, 'sendTeamMessage']);
     });
 });

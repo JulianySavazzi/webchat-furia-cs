@@ -26,8 +26,8 @@ class MessageHelper
     {
         $params['team-name'] = $params['team-name'] ?? "TEAM";
         $params['username'] = $params['username'] ?? "FURIOSO(A)";
-        $params['first-message'] = implode(', ', FirstMessage::values()) ?? "interagir com outros FURIOSOS";
-        $params['bot-options'] = implode(',' , BotOptionsMessage::values()) ?? "novidades sobre a FURIA";
+        $params['first-message'] = implode(' . ', FirstMessage::values()) ?? "interagir com outros FURIOSOS";
+        $params['bot-options'] = implode(' . ' , BotOptionsMessage::values()) ?? "novidades sobre a FURIA";
         switch ($case) {
             case 'welcome-team':
                 $message = "Olá ".$params["username"]." ! Bem vindo(a) a ".$params['team-name']." !";

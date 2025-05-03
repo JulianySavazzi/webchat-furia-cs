@@ -71,6 +71,18 @@ class UserService
     }
 
     /**
+     * retorna o username de todos os usuarios cadastrados
+     *
+     * @return Collection
+     */
+    public function getAllUsernames()
+    {
+        return $this->entity::query()
+            ->select( 'username')
+            ->get();
+    }
+
+    /**
      * listar todos os usuaarios cadastradoos, exceto usuario logado;
      *
      * @param array $data

@@ -49,4 +49,14 @@ class UserController extends Controller
                 Response::HTTP_BAD_REQUEST);
         }
     }
+
+    public function getAllUsernames()
+    {
+        try {
+            return $this->userService->getAllUsernames();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erro ao listar usuaario.', 'error' => $e->getMessage()],
+                Response::HTTP_BAD_REQUEST);
+        }
+    }
 }

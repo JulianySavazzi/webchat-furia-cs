@@ -7,17 +7,23 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Webchat Furia CS
-### Sopbre o projeto:
+# Webchat Furia CS
+## Sobre o projeto:
 - Os usuários podem se cadastrar com email e senha ou username e senha 
 (há uma verificação para não permitir que usuários diferentes cadastrem o mesmo email ou username).
-- O primeiro usuário cadastrado (ao executar as migraations e seeder do banco de dados) é o *FURIA BOT*, que é o 
+- O primeiro usuário cadastrado (ao executar as migrations e seeder do banco de dados) é o *FURIA BOT*, que é o 
 usuário owner (responsável) pela *FURIA TEAM*, um grupo de mensagens onde todos os usuários cadastrados podem enviar 
 mensagens (parecido com o chat de lives do youtube);
 - O *FURIA BOT* vai ser o primeiro a enviar mensagem para todos os usuários cadastrados, ele vai enviar uma mensagem de 
 "Boas vindas", e deixar as opções disponíveis do chatbot;
-- Todos usuáario cadastrados podem enviar mensagens um para o outro, e para a *FURIA TEAM*.
-- Futuramente será implementado o login pela steam.
+- Todos os usuários cadastrados podem enviar mensagens um para o outro, e para a *FURIA TEAM*.
+#### *Ideias de melhorias (novas features):*
+- Será otimizada a coleta de preferências de cada usuário, de acordo com as informações trocadas por ele e o 
+*FURIA BOT* nas mensagens: interações (essas preferencias são sobre o CS GO  e CS 2, jogos, partidas e produtos 
+da FURIA, não vamos salvar dados confidenciais nem dados sensíveis sobre os usuários);
+- Futuramente será implementado o login pela steam, trazendo os dados públicos do perfil do usuário na Steam;
+- Será implementado futuramente IA no chatbot, para respostas otimizadas e personalizadas;
+- Será implementado a criação de grupos (teams para troca de mensagem) pelos usuários;
 
 ### Tecnologias:
   - Laravel 12
@@ -37,7 +43,7 @@ mensagens (parecido com o chat de lives do youtube);
   - Iniciar os containers docker com banco de dados e network: ``docker compose up -d``
   - Iniciar o websocket com reverb: ``php artisan reverb:start --debug``
 
-- ### Documentações utilizadas:
+### Documentações utilizadas:
   - [Laravel reverb](https://laravel.com/docs/12.x/reverb)
   - [Laravel Sanctum](https://laravel.com/docs/12.x/sanctum)
   - [Laravel Socialite](https://laravel.com/docs/12.x/socialite)

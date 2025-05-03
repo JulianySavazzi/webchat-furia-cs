@@ -30,7 +30,7 @@ class UserService
      */
     public function create(array $data): mixed
     {
-        if(isset($data['password'])) {
+        if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
         $user = $this->entity::query()->create($data);

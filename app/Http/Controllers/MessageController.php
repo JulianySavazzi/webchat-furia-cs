@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\MessageService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,19 +36,30 @@ class MessageController extends Controller
         }
     }
 
-    public function sendMessage(int $userTo, Request $request) {
+    /**
+     * @param int $userTo
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendMessage(int $userTo, Request $request)
+    {
         $data = $request->validate([
             'content' => 'required|string',
         ]);
         try {
-        $send = $this->messageService->sendMessage($userTo, $data);
-        return response()->json($send, Response::HTTP_OK);
+            $send = $this->messageService->sendMessage($userTo, $data);
+            return response()->json($send, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao enviar mensagens.', 'error' => $e->getMessage()],
-            Response::HTTP_BAD_REQUEST);
+                Response::HTTP_BAD_REQUEST);
         }
     }
 
+    /**
+     * @param int $team
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function listTeamMessages(int $team, Request $request)
     {
         try {
@@ -59,7 +71,13 @@ class MessageController extends Controller
         }
     }
 
-    public function sendTeamMessage(int $team, Request $request) {
+    /**
+     * @param int $team
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendTeamMessage(int $team, Request $request)
+    {
         $data = $request->validate([
             'content' => 'required|string',
         ]);

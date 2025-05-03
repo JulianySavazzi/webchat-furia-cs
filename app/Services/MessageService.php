@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Message;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class MessageService
 {
@@ -16,6 +17,11 @@ class MessageService
         //
     }
 
+    /**
+     * @param int $id
+     * @param array $data
+     * @return Collection
+     */
     public function listUsersMessages(int $id, array $data)
     {
         $userFrom = auth()->user();
@@ -29,6 +35,11 @@ class MessageService
 
     }
 
+    /**
+     * @param int $id
+     * @param array $data
+     * @return Message
+     */
     public function sendMessage(int $id, array $data)
     {
         $userFrom = auth()->user();
@@ -44,14 +55,23 @@ class MessageService
         return $message;
     }
 
+    /**
+     * @param int $idTeam
+     * @param array $data
+     * @return Collection
+     */
     public function listTeamMessages(int $idTeam, array $data)
     {
-//        return Message::query()->with('userFrom', 'userTo');
         return Team::query()->with('messages', 'messages.userFrom:id,username', 'users:id,username')
             ->where(['id' => $idTeam])
             ->get();
     }
 
+    /**
+     * @param int $idTeam
+     * @param array $data
+     * @return Message
+     */
     public function sendTeamMessage(int $idTeam, array $data)
     {
         $userFrom = auth()->user();
@@ -62,12 +82,6 @@ class MessageService
         $message->content = $data['content'];
         $message->userFrom()->associate($userFrom);
         $message->team()->associate($idTeam);
-//        $message->userTo()->associate($userTo);
-//        $team->users()->sync($userTo);
-
-//        foreach ($userTo as $user) {
-//            $message->userTo()->associate($user);
-//        }
 
         $message->save();
         return $message;

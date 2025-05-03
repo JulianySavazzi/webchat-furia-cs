@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/testing', function(){
+Route::get('/testing', function () {
     return response()->json(['message' => 'TESTADO!'], 200);
 });
 
@@ -19,9 +19,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
     Route::prefix('/chat/messages')->group(function () {
-        Route::get('/{userTo}',[\App\Http\Controllers\MessageController::class, 'listUsersMessages']);
+        Route::get('/{userTo}', [\App\Http\Controllers\MessageController::class, 'listUsersMessages']);
         Route::post('/{userTo}', [\App\Http\Controllers\MessageController::class, 'sendMessage']);
-        Route::get('/team/{team}',[\App\Http\Controllers\MessageController::class, 'listTeamMessages']);
+        Route::get('/team/{team}', [\App\Http\Controllers\MessageController::class, 'listTeamMessages']);
         Route::post('/team/{team}', [\App\Http\Controllers\MessageController::class, 'sendTeamMessage']);
     });
 });

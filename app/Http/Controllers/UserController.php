@@ -35,7 +35,17 @@ class UserController extends Controller
             $user = $this->userService->index($data);
             return response()->json($user, Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Erro ao listar usuaarios.', 'error' => $e->getMessage()],
+            return response()->json(['message' => 'Erro ao listar usuarios.', 'error' => $e->getMessage()],
+                Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function me()
+    {
+        try {
+            return $this->userService->me();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erro ao listar usuaario.', 'error' => $e->getMessage()],
                 Response::HTTP_BAD_REQUEST);
         }
     }

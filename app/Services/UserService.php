@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -57,6 +58,16 @@ class UserService
             $user->teams()->sync($data['teams']);
         }
         return $user;
+    }
+
+    /**
+     * retorna o usuario logado
+     *
+     * @return Authenticatable|null
+     */
+    public function me()
+    {
+        return auth()->user();
     }
 
     /**

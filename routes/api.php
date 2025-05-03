@@ -16,6 +16,7 @@ Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::prefix('/user')->group(function () {
         Route::get('/', [\App\Http\Controllers\UserController::class, 'index']);
+        Route::get('/me', [\App\Http\Controllers\UserController::class, 'me']);
         Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
     Route::prefix('/chat/messages')->group(function () {

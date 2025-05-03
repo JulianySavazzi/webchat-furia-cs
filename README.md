@@ -13,9 +13,13 @@ Projeto
 - Tecnologias:
   - Laravel 12
   - PostgreSQL 15
+  - php 8.4
 
-- Instalar dependencias:
+- Instalar dependencias e configurar banco de dados:
   - Composer: ``composer install`` 
+  - Node: ``npm install``
+  - Criar um arquivo .env a partir do .env.exaample: ``touch .env``
+  - Migrations e seeder: ``php artisan migrate --seed``
 
 - Executar projeto:  
   - Iniciar o servidor vite e artisan: ``composer run dev``

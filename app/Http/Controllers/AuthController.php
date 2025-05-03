@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\MessageHelper;
 use App\Models\User;
 use App\Services\MessageService;
 use App\Services\TeamService;
@@ -18,7 +19,7 @@ class AuthController extends Controller
      * @param MessageService $messageService
      */
     public function __construct(
-        protected readonly UserService $userService,
+        protected readonly UserService    $userService,
         protected readonly MessageService $messageService
     )
     {
@@ -43,7 +44,16 @@ class AuthController extends Controller
         ]);
         try {
             $user = $this->userService->create($data);
-            $this->messageService->sendMessageByBot('user');
+
+            if ($user) {
+                $params['team-name'] = 'team_furia_cs';
+                $params['username'] = $user->username;
+                $messageTeam = MessageHelper::templateMessages('welcome-team', $params);
+                $messageUSer = MessageHelper::templateMessages('welcome-user', $params);
+                $this->messageService->sendMessageByBot('user', $messageUSer, $user->id);
+                $this->messageService->sendMessageByBot('team', $messageTeam);
+            }
+
             return response()->json($user, Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao criar conta.', 'error' => $e->getMessage()],

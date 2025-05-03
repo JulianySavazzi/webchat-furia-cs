@@ -108,4 +108,16 @@ class MessageService
                 break;
         }
     }
+
+    /**
+     * verifica o message->content quando o user envia uma mensagem para o furia_bot;
+     * salvar paretes das mensagens com dados sobre a FURIA (matches, stats), sobre CS ou sobre Steam;
+     *
+     * @param array $data
+     * @return void
+     */
+    public function saveInteractionWithBot(array $data)
+    {
+
+    }
 }

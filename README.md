@@ -8,25 +8,36 @@
 </p>
 
 ## Webchat Furia CS
-Projeto
+### Sopbre o projeto:
+- Os usuários podem se cadastrar com email e senha ou username e senha 
+(há uma verificação para não permitir que usuários diferentes cadastrem o mesmo email ou username).
+- O primeiro usuário cadastrado (ao executar as migraations e seeder do banco de dados) é o *FURIA BOT*, que é o 
+usuário owner (responsável) pela *FURIA TEAM*, um grupo de mensagens onde todos os usuários cadastrados podem enviar 
+mensagens (parecido com o chat de lives do youtube);
+- O *FURIA BOT* vai ser o primeiro a enviar mensagem para todos os usuários cadastrados, ele vai enviar uma mensagem de 
+"Boas vindas", e deixar as opções disponíveis do chatbot;
+- Todos usuáario cadastrados podem enviar mensagens um para o outro, e para a *FURIA TEAM*.
+- Futuramente será implementado o login pela steam.
 
-- Tecnologias:
+### Tecnologias:
   - Laravel 12
-  - PostgreSQL 15
+  - PostgreSQL 15 (docker)
   - php 8.4
+  - VueJS 3
+  - InertiaJs
 
-- Instalar dependencias e configurar banco de dados:
+- ### Instalar dependencias e configurar banco de dados:
   - Composer: ``composer install`` 
   - Node: ``npm install``
   - Criar um arquivo .env a partir do .env.exaample: ``touch .env``
   - Migrations e seeder: ``php artisan migrate --seed``
 
-- Executar projeto:  
+- ### Executar projeto:  
   - Iniciar o servidor vite e artisan: ``composer run dev``
   - Iniciar os containers docker com banco de dados e network: ``docker compose up -d``
-  - Iniciar o websocket com reverb: ``php artisan reverb:start``
+  - Iniciar o websocket com reverb: ``php artisan reverb:start --debug``
 
-- Documentações utilizadas:
+- ### Documentações utilizadas:
   - [Laravel reverb](https://laravel.com/docs/12.x/reverb)
   - [Laravel Sanctum](https://laravel.com/docs/12.x/sanctum)
   - [Laravel Socialite](https://laravel.com/docs/12.x/socialite)
@@ -34,5 +45,5 @@ Projeto
   - [Laravel Broadcasting](https://laravel.com/docs/12.x/broadcasting)
   - [Laravel Echo](https://github.com/laravel/echo)
 
-- Links úteis:
+- ### Links úteis:
   - [Get SteamId by profile](https://steamid.xyz/)

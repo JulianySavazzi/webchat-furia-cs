@@ -18,13 +18,15 @@ class MessageService
     }
 
     /**
+     * o user from sempre sera o usuario logado ou o bot
+     *
      * @param int $id
      * @param array $data
      * @return Collection
      */
     public function listUsersMessages(int $id, array $data)
     {
-        $userFrom = auth()->user();
+        $userFrom = auth()->user() ?? 1;
         $userTo = User::query()->find($id);
 
         return Message::query()->with('userFrom', 'userTo')
@@ -36,13 +38,15 @@ class MessageService
     }
 
     /**
+     * o user from sempre sera o usuario logado ou o bot
+     *
      * @param int $id
      * @param array $data
      * @return Message
      */
     public function sendMessage(int $id, array $data)
     {
-        $userFrom = auth()->user();
+        $userFrom = auth()->user() ?? 1;
         $userTo = User::query()->find($id);
         $message = new Message();
         $message->content = $data['content'];
@@ -68,13 +72,15 @@ class MessageService
     }
 
     /**
+     * o user from sempre sera o usuario logado ou o bot
+     *
      * @param int $idTeam
      * @param array $data
      * @return Message
      */
     public function sendTeamMessage(int $idTeam, array $data)
     {
-        $userFrom = auth()->user();
+        $userFrom = auth()->user() ?? 1;
         $team = Team::query()->find($idTeam);
         $userTo = $team->users;
 

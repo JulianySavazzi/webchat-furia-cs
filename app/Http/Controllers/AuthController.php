@@ -51,7 +51,7 @@ class AuthController extends Controller
                 $messageTeam = MessageHelper::templateMessages('welcome-team', $params);
                 $messageUSer = MessageHelper::templateMessages('welcome-user', $params);
                 $this->messageService->sendMessageByBot('user', $messageUSer, $user->id);
-                $this->messageService->sendMessageByBot('team', $messageTeam);
+                $this->messageService->sendMessageByBot('team', $messageTeam, 1);
             }
 
             return response()->json($user, Response::HTTP_CREATED);

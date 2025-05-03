@@ -30,10 +30,10 @@ class MessageHelper
         $params['bot-options'] = implode(',' , BotOptionsMessage::values()) ?? "novidades sobre a FURIA";
         switch ($case) {
             case 'welcome-team':
-                $message = "Olá ".$params["username"]." !. Bem vindo(a) a ".$params['team-name']." !";
+                $message = "Olá ".$params["username"]." ! Bem vindo(a) a ".$params['team-name']." !";
                 break;
             case 'welcome-user':
-                $message = "Olá ".$params["username"]." !. Bem vindo(a) ao WEBCHAT FURIA CS! Aqui você pode ".$params['first-message']." !";
+                $message = "Olá ".$params["username"]." ! Bem vindo(a) ao WEBCHAT FURIA CS! Aqui você pode ".$params['first-message']." !";
                 break;
             case 'come-back':
                 $message = "Bem vindo(a) de volta ".$params["username"]." !";

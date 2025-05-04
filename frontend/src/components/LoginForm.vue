@@ -1,3 +1,66 @@
+<script setup>
+import { ref } from 'vue';
+import {useAuthStore} from "@/stores/useAuthStore.js";
+
+const emit = defineEmits(['success', 'error']);
+
+const form = ref({
+  username: '',
+  password: ''
+});
+
+const errors = ref({
+  username: '',
+  password: ''
+});
+
+const isLoading = ref(false);
+const errorMessage = ref('');
+const authStore = useAuthStore();
+
+const validate = () => {
+  let valid = true;
+  errors.value = { username: '', password: '' };
+
+  if (!form.value.username.trim()) {
+    errors.value.username = 'Por favor, insira seu usuário';
+    valid = false;
+  }
+
+  if (!form.value.password) {
+    errors.value.password = 'Por favor, insira sua senha';
+    valid = false;
+  } else if (form.value.password.length < 8) {
+    errors.value.password = 'A senha deve ter pelo menos 8 caracteres';
+    valid = false;
+  }
+
+  return valid;
+};
+
+const handleSubmit = async () => {
+  if (!validate()) return;
+  console.log('login...')
+  isLoading.value = true;
+  errorMessage.value = '';
+
+  try {
+    const response = authStore.login({
+      username: form.value.username,
+        password: form.value.password
+    });
+    console.log(response)
+    emit('success', response);
+
+  } catch (error) {
+    errorMessage.value = error.response?.data?.message || 'Credenciais inválidas';
+    emit('error', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+</script>
+
 <template>
   <div class="max-w-md mx-auto p-6 bg-black/50 border border-amber-100/20 rounded-lg">
     <h2 class="text-2xl font-bold text-amber-100 mb-6">Login</h2>
@@ -53,69 +116,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import apiClient from '@/path/to/your/apiClient';
-
-const emit = defineEmits(['success', 'error']);
-
-const form = ref({
-  username: '',
-  password: ''
-});
-
-const errors = ref({
-  username: '',
-  password: ''
-});
-
-const isLoading = ref(false);
-const errorMessage = ref('');
-
-const validate = () => {
-  let valid = true;
-  errors.value = { username: '', password: '' };
-
-  if (!form.value.username.trim()) {
-    errors.value.username = 'Por favor, insira seu usuário';
-    valid = false;
-  }
-
-  if (!form.value.password) {
-    errors.value.password = 'Por favor, insira sua senha';
-    valid = false;
-  } else if (form.value.password.length < 8) {
-    errors.value.password = 'A senha deve ter pelo menos 8 caracteres';
-    valid = false;
-  }
-
-  return valid;
-};
-
-const handleSubmit = async () => {
-  if (!validate()) return;
-
-  isLoading.value = true;
-  errorMessage.value = '';
-
-  try {
-    // Primeiro obtemos o cookie CSRF (se necessário)
-    await apiClient.get('/sanctum/csrf-cookie');
-
-    // Fazemos o login
-    const response = await apiClient.post('/login', {
-      username: form.value.username,
-      password: form.value.password
-    });
-
-    // Emite evento de sucesso
-    emit('success', response.data);
-
-  } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Credenciais inválidas';
-    emit('error', error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-</script>

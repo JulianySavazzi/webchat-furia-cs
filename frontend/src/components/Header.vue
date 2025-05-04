@@ -1,15 +1,20 @@
-<!-- components/Header.vue -->
 <script setup>
+import { ref, computed } from 'vue';
 import CounterStrikeIcon from "@/components/icons/CounterStrikeIcon.vue";
+import LoginForm from "@/components/LoginForm.vue";
+import { useAuthStore } from '@/stores/useAuthStore';
 
-defineProps({
-  isAuthenticated: {
-    type: Boolean,
-    default: false
-  }
-});
+const authStore = useAuthStore();
+const isAuthenticated = computed(() => authStore.isLoggedIn);
 
-const emit = defineEmits(['login', 'signup', 'logout']);
+//controlar a visibilidade do modal
+const showLoginModal = ref(false);
+
+//login bem-sucedido fecha o modal
+const handleLoginSuccess = (data) => {
+  console.log('modal login sera fechado...')
+  if(isAuthenticated) showLoginModal.value = false;
+};
 </script>
 
 <template>
@@ -37,7 +42,7 @@ const emit = defineEmits(['login', 'signup', 'logout']);
       <div class="flex space-x-2 sm:space-x-4">
         <template v-if="!isAuthenticated">
           <button
-            @click="emit('login')"
+            @click="showLoginModal = true"
             class="bg-transparent hover:bg-amber-100/10 text-amber-100 font-medium py-2 px-3 sm:px-4 border border-amber-100/30 rounded-md text-sm sm:text-base transition duration-200"
           >
             Login
@@ -57,6 +62,23 @@ const emit = defineEmits(['login', 'signup', 'logout']);
         >
           Logout
         </button>
+      </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div v-if="showLoginModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div class="relative">
+        <button
+          @click="showLoginModal = false"
+          class="absolute -top-10 -right-2 text-amber-100 hover:text-amber-300"
+          aria-label="Fechar modal"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <LoginForm @success="handleLoginSuccess" />
       </div>
     </div>
   </header>

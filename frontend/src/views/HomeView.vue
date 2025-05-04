@@ -1,34 +1,16 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Header from '@/components/Header.vue';
+import { useAuthStore } from '@/stores/useAuthStore';
 
-const isAuthenticated = ref(false);
+const authStore = useAuthStore();
+const isAuthenticated = computed(() => authStore.isLoggedIn);
 
-const handleLogin = () => {
-  console.log('Login realizado');
-  isAuthenticated.value = true;
-};
-
-const handleSignup = () => {
-
-  console.log('Conta criada');
-  isAuthenticated.value = false;
-};
-
-const handleLogout = () => {
-  console.log('Logout realizado');
-  isAuthenticated.value = false;
-};
 </script>
 
 <template>
   <div class="min-h-screen bg-black flex flex-col">
-    <Header
-      :is-authenticated="isAuthenticated"
-      @login="handleLogin"
-      @signup="handleSignup"
-      @logout="handleLogout"
-    />
+    <Header/>
 
     <main class="flex-grow container mx-auto px-4 py-8">
       <!-- Conteúdo principal -->

@@ -38,6 +38,7 @@ apenas o *FURIA TEAM*;
   - Node: ``npm install``
   - Criar um arquivo .env a partir do .env.exaample: ``touch .env``
   - Migrations e seeder: ``php artisan migrate --seed``
+  - Verificar pacotes do frontend: ``npm list vue vue-router axios pinia``
 
 - ### Executar projeto:  
   - Iniciar o servidor vite e artisan: ``composer run dev``

@@ -63,6 +63,8 @@ class AuthController extends Controller
     }
 
     /**
+     * envia mensagem de bem vindo de volta, apos o primeiro logout qnd realizar login novamente
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -82,6 +84,17 @@ class AuthController extends Controller
         } else {
             $user->tokens()->delete();
             $token = $user->createToken('auth-token')->plainTextToken;
+
+            $this->messageService->saveLoginInteractions([
+                'user_id' => $user->id,
+                'method_name' => 'login'
+            ]);
+
+            $data['id'] = $user->id;
+            $data['username'] = $user->username;
+            $data['content'] = MessageHelper::templateMessages('come-back', $data);
+            $this->messageService->sendComeBackMessageByBot($data);
+
             return response()->json(['token' => $token, 'user' => $user], Response::HTTP_OK);
         }
     }
@@ -96,6 +109,10 @@ class AuthController extends Controller
             if (!$request->user()) {
                 return response()->json(['message' => 'Usuário não autenticado!'], Response::HTTP_UNAUTHORIZED);
             }
+            $this->messageService->saveLoginInteractions([
+                'user_id' => auth()->user()->id,
+                'method_name' => 'logout'
+            ]);
             auth()->user()->tokens()->delete();
             return response()->json(['message' => 'Logout realizado com sucesso!'], Response::HTTP_OK);
         } catch (\Exception $e) {

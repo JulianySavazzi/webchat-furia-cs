@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Interaction;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -107,5 +108,16 @@ class UserService
             })
             ->orderBy('id')
             ->get();
+    }
+
+    /**
+     * @param array $data
+     * @return Collection
+     */
+    public function getLoginUserInteractions(array $data)
+    {
+        return Interaction::query()
+            ->where('user_id', $data['user_id'])
+            ->whereJsonContains('data->logout', [])->get();
     }
 }

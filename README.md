@@ -23,7 +23,8 @@ mensagens (parecido com o chat de lives do youtube);
 da FURIA, não vamos salvar dados confidenciais nem dados sensíveis sobre os usuários);
 - Futuramente será implementado o login pela steam, trazendo os dados públicos do perfil do usuário na Steam;
 - Será implementado futuramente IA no chatbot, para respostas otimizadas e personalizadas;
-- Será implementado a criação de grupos (teams para troca de mensagem) pelos usuários;
+- Será implementado futuramente a criação de grupos (teams para troca de mensagem) pelos usuários, inicialmente tems 
+apenas o *FURIA TEAM*;
 
 ### Tecnologias:
   - Laravel 12
@@ -50,7 +51,8 @@ da FURIA, não vamos salvar dados confidenciais nem dados sensíveis sobre os us
   - [Laravel Front-end](https://laravel.com/docs/12.x/frontend)
   - [Laravel Broadcasting](https://laravel.com/docs/12.x/broadcasting)
   - [Laravel Echo](https://github.com/laravel/echo)
-  - [Pandascore]()
+  - [PandaScore CS](https://developers.pandascore.co/reference/get_csgo_matches_running-1)
+  - [PandaScore CS Migration](https://developers.pandascore.co/docs/counter-strike-2-migration#filtering-by-videogame_title)
 
 - ### Links úteis:
   - [Get SteamId by profile](https://steamid.xyz/)

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('interactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('message_id')->constrained('messages');
-            $table->foreignId('furia_bot_id')->constrained('users');
+            $table->foreignId('message_id')->nullable()->constrained('messages');
+            $table->foreignId('furia_bot_id')->nullable()->constrained('users');
             $table->jsonb('data')->nullable();
             $table->timestamps();
         });

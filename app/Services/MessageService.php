@@ -6,6 +6,7 @@ use App\Models\Interaction;
 use App\Models\Message;
 use App\Models\Team;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 
@@ -14,9 +15,10 @@ class MessageService
     /**
      * Create a new class instance.
      */
-    public function __construct()
+    public function __construct(
+        protected readonly UserService $userService
+    )
     {
-        //
     }
 
     /**
@@ -117,6 +119,36 @@ class MessageService
         }
     }
 
+    public function sendComeBackMessageByBot(array $data)
+    {
+        $data['id'] = $data['id'] ?? auth()->user()->id;
+        $hasLogout = $this->userService->getLoginUserInteractions(['user_id' => $data['id']]);
+        if ($hasLogout) {
+            $this->sendMessageByBot('user', $data['content'], $data['id']);
+        }
+    }
+
+    /**
+     * salvar quando o usuario fez login e logout
+     *
+     * @param array $data
+     * @return void
+     */
+    public function saveLoginInteractions(array $data)
+    {
+        $now = Carbon::now();
+        if (isset($data['user_id'])) {
+            if (isset($data['method_name'])) {
+                Interaction::query()->create([
+                    'user_id' => $data['user_id'],
+                    'data' => [$data['method_name'] => [$now]],
+                    'furia_bot_id' => null,
+                    'message_id' => null,
+                ]);
+            }
+        }
+    }
+
     /**
      * verifica o message->content quando o user envia uma mensagem para o furia_bot;
      * salvar paretes das mensagens com dados sobre a FURIA (matches, stats), sobre CS ou sobre Steam;
@@ -139,6 +171,7 @@ class MessageService
                         'furia_cs' => $message['content']
                     ],
                     'furia_bot_id' => $message['user_to'],
+                    'message_id' => $message['id'],
                 ]);
             } elseif (Str::contains(strtolower($sanitized), 'furiagg') || Str::contains(strtolower($sanitized), 'loja')) {
                 Interaction::query()->create([
@@ -147,6 +180,7 @@ class MessageService
                         'furia_gg' => $message['content']
                     ],
                     'furia_bot_id' => $message['user_to'],
+                    'message_id' => $message['id'],
                 ]);
             } elseif (Str::contains(strtolower($sanitized), 'steam')) {
                 Interaction::query()->create([
@@ -155,6 +189,7 @@ class MessageService
                         'steam' => $message['content']
                     ],
                     'furia_bot_id' => $message['user_to'],
+                    'message_id' => $message['id'],
                 ]);
             } elseif (Str::contains(strtolower($sanitized), 'games') || Str::contains(strtolower($sanitized), 'jogo')) {
                 Interaction::query()->create([
@@ -163,6 +198,7 @@ class MessageService
                         'games' => $message['content']
                     ],
                     'furia_bot_id' => $message['user_to'],
+                    'message_id' => $message['id'],
                 ]);
             } elseif (Str::contains(strtolower($sanitized), 'matche') || Str::contains(strtolower($sanitized), 'partida')) {
                 Interaction::query()->create([
@@ -171,6 +207,7 @@ class MessageService
                         'matches' => $message['content']
                     ],
                     'furia_bot_id' => $message['user_to'],
+                    'message_id' => $message['id'],
                 ]);
             }
         }

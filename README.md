@@ -34,15 +34,16 @@ apenas o *FURIA TEAM*;
   - InertiaJs
 
 - ### Instalar dependencias e configurar banco de dados:
-  - Composer: ``composer install`` 
-  - Node: ``npm install``
+  - Composer no diretorio raiz: ``composer install`` 
+  - Node no diretorio frontend/: ``npm install``
   - Criar um arquivo .env a partir do .env.exaample: ``touch .env``
-  - Migrations e seeder: ``php artisan migrate --seed``
+  - Migrations e seeder no diretorio raiz: ``php artisan migrate --seed``
 
 - ### Executar projeto:  
-  - Iniciar o servidor vite e artisan: ``composer run dev``
-  - Iniciar os containers docker com banco de dados e network: ``docker compose up -d``
-  - Iniciar o websocket com reverb: ``php artisan reverb:start --debug``
+  - Iniciar o servidor vite e artisan no diretorio raiz: ``composer run dev``
+  - Iniciar os containers docker com banco de dados e network no diretorio raiz: ``docker compose up -d``
+  - Iniciar o websocket com reverb no diretorio raiz: ``php artisan reverb:start --debug``
+  - Iniciar o servidor vite no diretorio frontend/: ``npm run dev``
 
 ### Documentações utilizadas:
   - [Laravel reverb](https://laravel.com/docs/12.x/reverb)

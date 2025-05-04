@@ -12,9 +12,9 @@ Route::get('/testing', function () {
 
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
-Route::get('/furiosos', [\App\Http\Controllers\UserController::class, 'getAllUsernames']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/furiosos', [\App\Http\Controllers\UserController::class, 'getAllUsernames']);
     Route::prefix('/user')->group(function () {
         Route::get('/', [\App\Http\Controllers\UserController::class, 'index']);
         Route::get('/me', [\App\Http\Controllers\UserController::class, 'me']);

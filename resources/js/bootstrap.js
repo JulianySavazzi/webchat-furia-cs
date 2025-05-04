@@ -1,18 +1,7 @@
 import axios from 'axios';
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-
 window.axios = axios;
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.withCredentials = true
 
-/**
- * Inicializacao do VUE
- *
- */
-const app = createApp({})
-app.use(createPinia())
-window.VueApp = app
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

@@ -10,7 +10,7 @@ enum BotOptionsMessage : string
 
     case furiaGg = 'https://www.furia.gg/produtos';
 
-    case macthes = '';
+    case matches = '';
 
     public static function values(): array
     {

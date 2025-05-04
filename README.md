@@ -50,6 +50,7 @@ da FURIA, não vamos salvar dados confidenciais nem dados sensíveis sobre os us
   - [Laravel Front-end](https://laravel.com/docs/12.x/frontend)
   - [Laravel Broadcasting](https://laravel.com/docs/12.x/broadcasting)
   - [Laravel Echo](https://github.com/laravel/echo)
+  - [Pandascore]()
 
 - ### Links úteis:
   - [Get SteamId by profile](https://steamid.xyz/)

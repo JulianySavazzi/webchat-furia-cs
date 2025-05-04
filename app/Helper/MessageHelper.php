@@ -27,21 +27,45 @@ class MessageHelper
         $params['team-name'] = $params['team-name'] ?? "TEAM";
         $params['username'] = $params['username'] ?? "FURIOSO(A)";
         $params['first-message'] = implode(' . ', FirstMessage::values()) ?? "interagir com outros FURIOSOS";
-        $params['bot-options'] = implode(' . ' , BotOptionsMessage::values()) ?? "novidades sobre a FURIA";
+        $params['bot-options'] = implode(' . ', BotOptionsMessage::values()) ?? "novidades sobre a FURIA";
         switch ($case) {
             case 'welcome-team':
-                $message = "Olá ".$params["username"]." ! Bem vindo(a) a ".$params['team-name']." !";
+                $message = "Olá " . $params["username"] . " ! Bem vindo(a) a " . $params['team-name'] . " !";
                 break;
             case 'welcome-user':
-                $message = "Olá ".$params["username"]." ! Bem vindo(a) ao WEBCHAT FURIA CS! Aqui você pode ".$params['first-message']." !";
+                $message = "Olá " . $params["username"] . " ! Bem vindo(a) ao WEBCHAT FURIA CS! Aqui você pode " . $params['first-message'] . " !";
                 break;
             case 'come-back':
-                $message = "Bem vindo(a) de volta ".$params["username"]." !";
+                $message = "Bem vindo(a) de volta " . $params["username"] . " !";
                 break;
             default:
-                $message = "Olá ".$params["username"].", sou o FURIA Bot, owner da team_furia_cs, posso te ajudar com: "
-                .$params['bot-options']." . Basta digitar a opção desejada!";
+                $message = "Olá " . $params["username"] . ", sou o FURIA Bot, owner da team_furia_cs, posso te ajudar com: "
+                    . $params['bot-options'] . " . Basta digitar a opção desejada!";
                 break;
+        }
+        return $message;
+    }
+
+    public static function templateBotReplyMessages(string $case, ?array $params): string
+    {
+        switch ($case) {
+            case '!YTFCS':
+                $message = BotOptionsMessage::ytFuriaCs->value;
+                break;
+            case '!FURGG':
+                $message = BotOptionsMessage::furiaGg->value;
+                break;
+            case '!FURIX':
+                $message = BotOptionsMessage::twitter->value;
+                break;
+            case '!MATCH':
+                $message = BotOptionsMessage::matches->value;
+                break;
+            default:
+                $message = "Olá, sou o FURIA Bot, se você quer assistir nossos videos digite: !YTFCS" .
+                    " , se quer saber sobre nossos produtos digite: !FURGG" .
+                    " , se quiser acessar nosso X (antigo twitter) digite: !FURIX" .
+                    " , se quiser saber sobre as próximas partidas digite: !MATCH";
         }
         return $message;
     }

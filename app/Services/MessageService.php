@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Interaction;
 use App\Models\Message;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class MessageService
 {
@@ -124,6 +126,53 @@ class MessageService
      */
     public function saveInteractionWithBot(array $data)
     {
+        $messages = Message::query()->select('user_from', 'content')
+            ->where('user_to', 1)
+            ->get();
 
+        foreach ($messages->toArray() as $message) {
+            $sanitized = preg_replace('/[^a-zA-Z0-9]/', '', $message['content']);
+            if (Str::contains(strtolower($sanitized), 'furiacs') || Str::contains(strtolower($sanitized), 'cs')) {
+                Interaction::query()->create([
+                    'user_id' => $message['user_from'],
+                    'data' => [
+                        'furia_cs' => $message['content']
+                    ],
+                    'furia_bot_id' => $message['user_to'],
+                ]);
+            } elseif (Str::contains(strtolower($sanitized), 'furiagg') || Str::contains(strtolower($sanitized), 'loja')) {
+                Interaction::query()->create([
+                    'user_id' => $message['user_from'],
+                    'data' => [
+                        'furia_gg' => $message['content']
+                    ],
+                    'furia_bot_id' => $message['user_to'],
+                ]);
+            } elseif (Str::contains(strtolower($sanitized), 'steam')) {
+                Interaction::query()->create([
+                    'user_id' => $message['user_from'],
+                    'data' => [
+                        'steam' => $message['content']
+                    ],
+                    'furia_bot_id' => $message['user_to'],
+                ]);
+            } elseif (Str::contains(strtolower($sanitized), 'games') || Str::contains(strtolower($sanitized), 'jogo')) {
+                Interaction::query()->create([
+                    'user_id' => $message['user_from'],
+                    'data' => [
+                        'games' => $message['content']
+                    ],
+                    'furia_bot_id' => $message['user_to'],
+                ]);
+            } elseif (Str::contains(strtolower($sanitized), 'matche') || Str::contains(strtolower($sanitized), 'partida')) {
+                Interaction::query()->create([
+                    'user_id' => $message['user_from'],
+                    'data' => [
+                        'matches' => $message['content']
+                    ],
+                    'furia_bot_id' => $message['user_to'],
+                ]);
+            }
+        }
     }
 }

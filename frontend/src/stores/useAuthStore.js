@@ -21,8 +21,9 @@ export const useAuthStore = defineStore('auth', () => {
     await apiClient.post('register', credentials);
   }
   const logout = async function () {
-    await apiClient.post('logout');
+    await apiClient.post('user/logout');
     user.value = null;
+    localStorage.removeItem('authToken');
   }
   return { user, isLoggedIn, getUser, login, register, logout }
 }, {persist: true});

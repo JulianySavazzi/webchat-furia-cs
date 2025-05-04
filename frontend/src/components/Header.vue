@@ -15,6 +15,11 @@ const handleLoginSuccess = (data) => {
   console.log('modal login sera fechado...')
   if(isAuthenticated) showLoginModal.value = false;
 };
+
+const handleLogout = () => {
+  authStore.logout()
+  console.log('saindo...')
+}
 </script>
 
 <template>
@@ -57,7 +62,7 @@ const handleLoginSuccess = (data) => {
 
         <button
           v-else
-          @click="emit('logout')"
+          @click="handleLogout"
           class="bg-transparent hover:bg-red-500/10 text-red-400 font-medium py-2 px-3 sm:px-4 border border-red-400/30 rounded-md text-sm sm:text-base transition duration-200"
         >
           Logout

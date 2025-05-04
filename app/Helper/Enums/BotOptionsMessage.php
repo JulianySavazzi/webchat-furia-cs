@@ -2,7 +2,7 @@
 
 namespace App\Helper\Enums;
 
-enum BotOptionsMessage : string
+enum BotOptionsMessage: string
 {
     case ytFuriaCs = 'https://www.youtube.com/@FURIAggCS/playlists';
 
@@ -10,7 +10,13 @@ enum BotOptionsMessage : string
 
     case furiaGg = 'https://www.furia.gg/produtos';
 
-    case matches = '';
+    case matches = 'https://www.hltv.org/results?team=8297';
+
+    case events = 'https://www.hltv.org/team/8297/furia#tab-eventsBox';
+
+    case teamNews = 'https://www.hltv.org/team/8297/furia#tab-newsBox';
+
+    case stats = 'https://www.hltv.org/stats/teams/8297/furia';
 
     public static function values(): array
     {

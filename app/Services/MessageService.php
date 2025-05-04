@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helper\MessageHelper;
 use App\Models\Interaction;
 use App\Models\Message;
 use App\Models\Team;
@@ -42,7 +43,8 @@ class MessageService
     }
 
     /**
-     * o user from sempre sera o usuario logado ou o bot
+     * o userFrom sempre sera o usuario logado ou o bot;
+     * verificar quando o userTo for o bot, pra ele enviar uma resposta;
      *
      * @param int $id
      * @param array $data
@@ -59,6 +61,12 @@ class MessageService
         $message->save();
 
         //TODO event dispacther broadcast reverb
+
+        if($message->user_to == 1) {
+            $data['case'] = $data['case'] ?? $message->content;
+            $data['to'] = 'user';
+            $this->botReplyMessage($message->user_from, $data);
+        }
 
         return $message;
     }
@@ -93,8 +101,29 @@ class MessageService
         $message->userFrom()->associate($userFrom);
         $message->team()->associate($idTeam);
 
+        if(Str::contains($message->content, '@furia_bot')) {
+            $data['case'] = $data['case'] ?? $message->content;
+            $data['to'] = 'team';
+            $data['message'] = MessageHelper::templateBotReplyTeamMessages($data['case'], $data) ?? '';
+            $this->botReplyMessage($idTeam, $data);
+        }
+
         $message->save();
         return $message;
+    }
+
+    /**
+     * sempre que um user enviar uma mensagem para o bot, ele vai responder;
+     * userFrom sempre sera o bot nesse caso;
+     *
+     * @param int $userTo
+     * @param array $data
+     * @return void
+     */
+    public function botReplyMessage(int $userTo, array $data)
+    {
+        $message = $data['message'] ?? MessageHelper::templateBotReplyMessages($data['case'], $data);
+        $this->sendMessageByBot($data['to'], $message, $userTo);
     }
 
     /**
@@ -119,6 +148,12 @@ class MessageService
         }
     }
 
+    /**
+     * enviar mensagem de bem vindo de volta, ou outras mensagens que dependem de login e logout interactions
+     *
+     * @param array $data
+     * @return void
+     */
     public function sendComeBackMessageByBot(array $data)
     {
         $data['id'] = $data['id'] ?? auth()->user()->id;
@@ -127,6 +162,8 @@ class MessageService
             $this->sendMessageByBot('user', $data['content'], $data['id']);
         }
     }
+
+#TODO interactions services
 
     /**
      * salvar quando o usuario fez login e logout

@@ -30,7 +30,7 @@ class MessageHelper
         $params['bot-options'] = implode(' . ', BotOptionsMessage::values()) ?? "novidades sobre a FURIA";
         switch ($case) {
             case 'welcome-team':
-                $message = "Olá " . $params["username"] . " ! Bem vindo(a) a " . $params['team-name'] . " !";
+                $message = "Olá " . $params["username"] . " ! Bem vindo(a) a " . $params['team-name'] . " ! Se você quiser saber as novidades da FURIA, é só mandar uma mensagem me marcando: @furia_bot !";
                 break;
             case 'welcome-user':
                 $message = "Olá " . $params["username"] . " ! Bem vindo(a) ao WEBCHAT FURIA CS! Aqui você pode " . $params['first-message'] . " !";
@@ -46,27 +46,85 @@ class MessageHelper
         return $message;
     }
 
+    /**
+     * @param string $case
+     * @param array|null $params
+     * @return string
+     */
     public static function templateBotReplyMessages(string $case, ?array $params): string
     {
         switch ($case) {
             case '!YTFCS':
-                $message = BotOptionsMessage::ytFuriaCs->value;
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::ytFuriaCs->value;
                 break;
             case '!FURGG':
-                $message = BotOptionsMessage::furiaGg->value;
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::furiaGg->value;
                 break;
             case '!FURIX':
-                $message = BotOptionsMessage::twitter->value;
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::twitter->value;
                 break;
             case '!MATCH':
-                $message = BotOptionsMessage::matches->value;
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::matches->value;
+                break;
+            case '!EVENT':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::events->value;
+                break;
+            case '!FNEWS':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::teamNews->value;
+                break;
+            case '!STATS':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::teamNews->value;
                 break;
             default:
                 $message = "Olá, sou o FURIA Bot, se você quer assistir nossos videos digite: !YTFCS" .
-                    " , se quer saber sobre nossos produtos digite: !FURGG" .
-                    " , se quiser acessar nosso X (antigo twitter) digite: !FURIX" .
-                    " , se quiser saber sobre as próximas partidas digite: !MATCH";
+                    " ,\n se quer saber sobre nossos produtos digite: !FURGG" .
+                    " ,\n se quiser acessar nosso X (antigo twitter) digite: !FURIX" .
+                    " ,\n se quiser saber sobre as próximas partidas digite: !MATCH" .
+                    " ,\n se quiser saber sobre os eventos digite: !EVENT" .
+                    " ,\n se quiser saber sobre aas novidades da furia cs digite: !FNEWS" .
+                    " , se quiser saber sobre stats da furia cs digite: !STATS";
         }
         return $message;
+    }
+
+    /**
+     * @param string $case
+     * @param array|null $params
+     * @return string
+     */
+    public static function templateBotReplyTeamMessages(string $case, ?array $params): string
+    {
+        switch ($case) {
+            case '!YTFCS':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::ytFuriaCs->value;
+                break;
+            case '!FURGG':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::furiaGg->value;
+                break;
+            case '!FURIX':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::twitter->value;
+                break;
+            case '!MATCH':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::matches->value;
+                break;
+            case '!EVENT':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::events->value;
+                break;
+            case '!FNEWS':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::teamNews->value;
+                break;
+            case '!STATS':
+                $message = "Para encontrar o que deseja, é só clicar nesse link: " . BotOptionsMessage::teamNews->value;
+                break;
+            default:
+                $message = "Olá, sou o FURIA Bot, se você quer assistir nossos videos é só clicar nesse link: " . BotOptionsMessage::ytFuriaCs->value .
+                    " ,\n se quer saber sobre nossos produtos é só clicar nesse link: " . BotOptionsMessage::furiaGg->value .
+                    " ,\n se quiser acessar nosso X (antigo twitter) é só clicar nesse link: " . BotOptionsMessage::twitter->value .
+                    " ,\n se quiser saber sobre as próximas partidas é só clicar nesse link: " . BotOptionsMessage::matches->value .
+                    " ,\n se quiser saber sobre os eventos é só clicar nesse link: " . BotOptionsMessage::events->value .
+                    " ,\n se quiser saber sobre as novidades da furia cs é só clicar nesse link: " . BotOptionsMessage::teamNews->value .
+                    " , se quiser saber sobre stats da furia cs é só clicar nesse link: " . BotOptionsMessage::teamNews->value;
+        }
+        return strtoupper($message);
     }
 }

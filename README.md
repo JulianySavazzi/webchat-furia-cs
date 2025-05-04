@@ -53,6 +53,7 @@ apenas o *FURIA TEAM*;
   - [Laravel Echo](https://github.com/laravel/echo)
   - [PandaScore CS](https://developers.pandascore.co/reference/get_csgo_matches_running-1)
   - [PandaScore CS Migration](https://developers.pandascore.co/docs/counter-strike-2-migration#filtering-by-videogame_title)
+  - [HLTV Furia TEAM](https://www.hltv.org/team/8297)
 
 - ### Links úteis:
   - [Get SteamId by profile](https://steamid.xyz/)

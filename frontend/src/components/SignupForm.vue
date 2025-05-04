@@ -1,0 +1,197 @@
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from "@/stores/useAuthStore.js";
+
+const emit = defineEmits(['success', 'error']);
+
+const form = ref({
+  name: '',
+  email: '',
+  username: '',
+  password: '',
+  repassword: ''
+});
+
+const errors = ref({
+  name: '',
+  email: '',
+  username: '',
+  password: '',
+  repassword: ''
+});
+
+const isLoading = ref(false);
+const errorMessage = ref('');
+const authStore = useAuthStore();
+
+const validate = () => {
+  let valid = true;
+  errors.value = { name: '', email: '', username: '', password: '', repassword: '' };
+
+  // Validação do nome
+  if (!form.value.name.trim()) {
+    errors.value.name = 'Por favor, insira seu nome';
+    valid = false;
+  }
+
+  // Validação do email
+  if (!form.value.email.trim()) {
+    errors.value.email = 'Por favor, insira seu email';
+    valid = false;
+  } else if (!/^\S+@\S+\.\S+$/.test(form.value.email)) {
+    errors.value.email = 'Email inválido';
+    valid = false;
+  }
+
+  // Validação do username
+  if (!form.value.username.trim()) {
+    errors.value.username = 'Por favor, insira seu usuário';
+    valid = false;
+  }
+
+  // Validação da senha
+  if (!form.value.password) {
+    errors.value.password = 'Por favor, insira sua senha';
+    valid = false;
+  } else if (form.value.password.length < 8) {
+    errors.value.password = 'A senha deve ter pelo menos 8 caracteres';
+    valid = false;
+  }
+
+  // Validação de confirmação de senha
+  if (form.value.password !== form.value.repassword) {
+    errors.value.repassword = 'As senhas não coincidem';
+    valid = false;
+  }
+
+  return valid;
+};
+
+const handleSubmit = async () => {
+  if (!validate()) return;
+  console.log('criando conta...')
+  isLoading.value = true;
+  errorMessage.value = '';
+
+  try {
+    await authStore.register({
+      name: form.value.name,
+      email: form.value.email,
+      username: form.value.username,
+      password: form.value.password
+    });
+
+    // Limpa o formulário após o sucesso
+    form.value = { name: '', email: '', username: '', password: '', repassword: '' };
+    emit('success')
+
+  } catch (error) {
+    if (error.response?.status === 400) {
+      errorMessage.value = error.response.data?.message || 'Email ou usuário já cadastrado';
+    } else {
+      errorMessage.value = 'Erro no cadastro. Tente novamente.';
+    }
+  } finally {
+    isLoading.value = false;
+  }
+};
+</script>
+
+<template>
+  <div class="max-w-md mx-auto p-6 bg-black/50 border border-amber-100/20 rounded-lg">
+    <h2 class="text-2xl font-bold text-amber-100 mb-6">Cadastro</h2>
+
+    <form @submit.prevent="handleSubmit" class="space-y-4">
+      <!-- Campo de Nome -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-amber-100 mb-1">Nome</label>
+        <input
+          v-model="form.name"
+          id="name"
+          type="text"
+          class="w-full px-4 py-2 bg-black/70 border border-amber-100/30 rounded-md text-amber-100 focus:border-amber-300 focus:ring focus:ring-amber-200/50"
+          :class="{ 'border-red-500': errors.name }"
+          placeholder="Digite seu nome completo"
+        >
+        <p v-if="errors.name" class="mt-1 text-sm text-red-400">{{ errors.name }}</p>
+      </div>
+
+      <!-- Campo de Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-amber-100 mb-1">Email</label>
+        <input
+          v-model="form.email"
+          id="email"
+          type="email"
+          class="w-full px-4 py-2 bg-black/70 border border-amber-100/30 rounded-md text-amber-100 focus:border-amber-300 focus:ring focus:ring-amber-200/50"
+          :class="{ 'border-red-500': errors.email }"
+          placeholder="Digite seu email"
+        >
+        <p v-if="errors.email" class="mt-1 text-sm text-red-400">{{ errors.email }}</p>
+      </div>
+
+      <!-- Campo de Usuário -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-amber-100 mb-1">Usuário</label>
+        <input
+          v-model="form.username"
+          id="username"
+          type="text"
+          class="w-full px-4 py-2 bg-black/70 border border-amber-100/30 rounded-md text-amber-100 focus:border-amber-300 focus:ring focus:ring-amber-200/50"
+          :class="{ 'border-red-500': errors.username }"
+          placeholder="Digite seu usuário"
+        >
+        <p v-if="errors.username" class="mt-1 text-sm text-red-400">{{ errors.username }}</p>
+      </div>
+
+      <!-- Campo de Senha -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-amber-100 mb-1">Senha</label>
+        <input
+          v-model="form.password"
+          id="password"
+          type="password"
+          class="w-full px-4 py-2 bg-black/70 border border-amber-100/30 rounded-md text-amber-100 focus:border-amber-300 focus:ring focus:ring-amber-200/50"
+          :class="{ 'border-red-500': errors.password }"
+          placeholder="Digite sua senha (mínimo 8 caracteres)"
+        >
+        <p v-if="errors.password" class="mt-1 text-sm text-red-400">{{ errors.password }}</p>
+      </div>
+
+      <!-- Campo de Confirmação de Senha -->
+      <div>
+        <label for="repassword" class="block text-sm font-medium text-amber-100 mb-1">Confirme sua senha</label>
+        <input
+          v-model="form.repassword"
+          id="repassword"
+          type="password"
+          class="w-full px-4 py-2 bg-black/70 border border-amber-100/30 rounded-md text-amber-100 focus:border-amber-300 focus:ring focus:ring-amber-200/50"
+          :class="{ 'border-red-500': errors.repassword }"
+          placeholder="Repita sua senha"
+        >
+        <p v-if="errors.repassword" class="mt-1 text-sm text-red-400">{{ errors.repassword }}</p>
+      </div>
+
+      <!-- Botão de Submit -->
+      <button
+        type="submit"
+        class="w-full bg-amber-100 hover:bg-amber-200 text-black font-medium py-2 px-4 rounded-md transition duration-200"
+        :disabled="isLoading"
+      >
+        <span v-if="!isLoading">Cadastrar</span>
+        <span v-else class="flex items-center justify-center">
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Processando...
+        </span>
+      </button>
+
+      <!-- Mensagens de erro/sucesso -->
+      <p v-if="errorMessage" class="mt-2 text-sm" :class="errorMessage.includes('sucesso') ? 'text-green-400' : 'text-red-400'">
+        {{ errorMessage }}
+      </p>
+    </form>
+  </div>
+</template>

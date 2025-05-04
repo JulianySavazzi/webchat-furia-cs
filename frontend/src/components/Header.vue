@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import CounterStrikeIcon from "@/components/icons/CounterStrikeIcon.vue";
 import LoginForm from "@/components/LoginForm.vue";
+import SignupForm from "@/components/SignupForm.vue";
 import { useAuthStore } from '@/stores/useAuthStore';
 
 const authStore = useAuthStore();
@@ -9,11 +10,17 @@ const isAuthenticated = computed(() => authStore.isLoggedIn);
 
 //controlar a visibilidade do modal
 const showLoginModal = ref(false);
+const showSignupModal = ref(false)
 
 //login bem-sucedido fecha o modal
-const handleLoginSuccess = (data) => {
+const handleLoginSuccess = () => {
   console.log('modal login sera fechado...')
   if(isAuthenticated) showLoginModal.value = false;
+};
+
+//fecha o modal
+const handleSignupSuccess = () => {
+  showSignupModal.value = false;
 };
 
 const handleLogout = () => {
@@ -53,7 +60,7 @@ const handleLogout = () => {
             Login
           </button>
           <button
-            @click="emit('signup')"
+            @click="showSignupModal = true"
             class="bg-amber-100 hover:bg-amber-200 text-black font-medium py-2 px-3 sm:px-4 border border-amber-100 rounded-md text-sm sm:text-base transition duration-200"
           >
             Criar Conta
@@ -84,6 +91,16 @@ const handleLogout = () => {
         </button>
 
         <LoginForm @success="handleLoginSuccess" />
+      </div>
+    </div>
+
+    <!-- Modal de Cadastro (adicionado) -->
+    <div v-if="showSignupModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div class="relative">
+        <button @click="showSignupModal = false" class="absolute -top-10 -right-2 text-amber-100 hover:text-amber-300">
+          <!-- Ícone de fechar -->
+        </button>
+        <SignupForm @success="handleSignupSuccess" />
       </div>
     </div>
   </header>

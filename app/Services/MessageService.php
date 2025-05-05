@@ -60,8 +60,6 @@ class MessageService
         $message->userTo()->associate($userTo);
         $message->save();
 
-        //TODO event dispacther broadcast reverb
-
         if($message->user_to == 1) {
             $data['case'] = $data['case'] ?? $message->content;
             $data['to'] = 'user';

@@ -29,6 +29,7 @@ class MessageController extends Controller
     {
         try {
             $messages = $this->messageService->listUsersMessages($userTo, $request->query());
+            //TODO event dispacther broadcast reverb
             return response()->json($messages, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao listar mensagens.', 'error' => $e->getMessage()],
@@ -50,6 +51,7 @@ class MessageController extends Controller
         ]);
         try {
             $send = $this->messageService->sendMessage($userTo, $data);
+            //TODO event dispacther broadcast reverb
             return response()->json($send, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao enviar mensagens.', 'error' => $e->getMessage()],
@@ -68,6 +70,7 @@ class MessageController extends Controller
     {
         try {
             $messages = $this->messageService->listTeamMessages($team, $request->query());
+            //TODO event dispacther broadcast reverb
             return response()->json($messages, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao listar mensagens.', 'error' => $e->getMessage()],
@@ -89,6 +92,7 @@ class MessageController extends Controller
         ]);
         try {
             $send = $this->messageService->sendTeamMessage($team, $data);
+            //TODO event dispacther broadcast reverb
             return response()->json($send, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao enviar mensagens.', 'error' => $e->getMessage()],

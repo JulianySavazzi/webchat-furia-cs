@@ -29,7 +29,7 @@ class NewChatMessage implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      * vai criar canal privado para conversa entre dois users
-     *
+     * canal
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
     public function broadcastOn(): array
@@ -40,6 +40,10 @@ class NewChatMessage implements ShouldBroadcast
         ];
     }
 
+    /**
+     * evento
+     * @return string
+     */
     public function broadcastAs(): string
     {
         return 'user.message.sent';

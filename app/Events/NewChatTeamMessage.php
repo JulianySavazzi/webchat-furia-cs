@@ -29,6 +29,7 @@ class NewChatTeamMessage implements ShouldBroadcast
     }
 
     /**
+     * canal
      * @return PresenceChannel[]
      */
     public function broadcastOn(): array
@@ -38,6 +39,10 @@ class NewChatTeamMessage implements ShouldBroadcast
         ];
     }
 
+    /**
+     * evento
+     * @return string
+     */
     public function broadcastAs(): string
     {
         return 'team.message.sent';

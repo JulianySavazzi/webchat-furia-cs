@@ -1,71 +1,81 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import apiClient from '@/services/apiClient';
 
 // Estados
-const usersAndGroups = ref([]);
+const allUsers = ref([]);
+const teamData = ref(null); // Dados do time FURIA CS
 const currentChat = ref(null);
 const messages = ref([]);
 const newMessage = ref('');
 const isLoading = ref(false);
-const onlineUsers = ref([]);
 
-// Configuração do WebSocket
-const setupWebSocket = () => {
-  if (!window.Echo) {
-    console.error('Laravel Echo não está configurado');
-    return;
+// Contatos ordenados (Team primeiro, Bot em segundo, depois outros usuários)
+const orderedContacts = computed(() => {
+  const contacts = [];
+
+  // 1. Adiciona o time FURIA CS (se existir)
+  if (teamData.value) {
+    contacts.push({
+      id: teamData.value.id,
+      name: teamData.value.name,
+      type: 'team',
+      avatar: teamData.value.logo || 'https://via.placeholder.com/50',
+      unread_count: 0 // Você pode ajustar isso
+    });
   }
 
-  // Ouvir mensagens privadas
-  window.Echo.private(`user.${authUser.value.id}`)
-    .listen('.private.message.sent', (data) => {
-      if (currentChat.value?.id === data.sender_id || currentChat.value?.id === data.receiver_id) {
-        messages.value.push(data);
-      }
+  // 2. Adiciona o bot (usuário com ID 1)
+  const bot = allUsers.value.find(user => user.id === 1);
+  if (bot) {
+    contacts.push({
+      ...bot,
+      type: 'bot',
+      unread_count: 0
     });
+  }
 
-  // Ouvir mensagens de grupo
-  window.Echo.join(`team.1`) // Time FURIA (ID 1)
-    .here((users) => {
-      onlineUsers.value = users;
-    })
-    .joining((user) => {
-      if (!user.is_bot) {
-        console.log(`${user.name} entrou no chat`);
-      }
-    })
-    .leaving((user) => {
-      if (!user.is_bot) {
-        console.log(`${user.name} saiu do chat`);
-      }
-    })
-    .listen('.team.message.sent', (data) => {
-      if (currentChat.value?.id === data.team_id) {
-        messages.value.push(data);
-      }
-    });
-};
+  // 3. Adiciona outros usuários (exceto o bot)
+  const otherUsers = allUsers.value.filter(user => user.id !== 1);
+  contacts.push(...otherUsers.map(user => ({
+    ...user,
+    type: 'user',
+    unread_count: 0
+  })));
 
-// Busca usuários/grupos disponíveis
-const fetchUsersAndGroups = async () => {
+  return contacts;
+});
+
+// Busca todos os usuários e dados do time
+const fetchContacts = async () => {
   try {
     isLoading.value = true;
-    const response = await apiClient.get('/chats');
-    usersAndGroups.value = response.data;
+
+    // Busca todos os usuários (incluindo o bot)
+    const usersResponse = await apiClient.get('user');
+    allUsers.value = usersResponse.data;
+    console.log(allUsers)
+    // Extrai os dados do time FURIA CS do primeiro usuário
+    if (usersResponse.data.length > 0 && usersResponse.data[0].teams?.length > 0) {
+      teamData.value = usersResponse.data[0].teams[0];
+    }
+    console.log(teamData)
   } catch (error) {
-    console.error('Erro ao carregar chats:', error);
+    console.error('Erro ao carregar contatos:', error);
   } finally {
     isLoading.value = false;
   }
 };
 
 // Busca mensagens do chat selecionado
-const fetchMessages = async (chatId) => {
+//chat/messages/id-user-to
+//chat/messages/team/id-team
+const fetchMessages = async (chat) => {
+  currentChat.value = chat;
   try {
-    const endpoint = currentChat.value.type === 'group'
-      ? `/teams/${chatId}/messages`
-      : `/chats/${chatId}/messages`;
+    const endpoint = chat.type === 'team'
+      ? `chat/messages/team/${chat.id}`
+      : `chat/messages/${chat.id}`;
 
     const response = await apiClient.get(endpoint);
     messages.value = response.data;
@@ -75,81 +85,72 @@ const fetchMessages = async (chatId) => {
 };
 
 // Envia mensagem
+//chat/messages/id-user-to
+//chat/messages/team/id-team
 const sendMessage = async () => {
   if (!newMessage.value.trim() || !currentChat.value) return;
 
   try {
-    const endpoint = currentChat.value.type === 'group'
-      ? `/teams/${currentChat.value.id}/messages`
-      : `/chats/${currentChat.value.id}/messages`;
+    const endpoint = currentChat.value.type === 'team'
+      ? `chat/messages/team/${currentChat.value.id}`
+      : `chat/messages/${currentChat.value.id}`;
 
     await apiClient.post(endpoint, {
-      content: newMessage.value,
+      content: newMessage.value
     });
 
     newMessage.value = '';
+    await fetchMessages(currentChat.value);
   } catch (error) {
     console.error('Erro ao enviar mensagem:', error);
   }
 };
 
-// Atualiza mensagens quando muda o chat
-watch(currentChat, (newChat) => {
-  if (newChat) {
-    messages.value = [];
-    fetchMessages(newChat.id);
-  }
-});
-
-// Simula usuário autenticado (substitua pelo seu sistema real)
-const authUser = ref({
-  id: 1,
-  name: 'Você'
-});
-
 // Inicialização
-onMounted(() => {
-  fetchUsersAndGroups();
-  setupWebSocket();
-});
-
-// Limpeza ao sair
-onUnmounted(() => {
-  if (window.Echo) {
-    window.Echo.leave(`user.${authUser.value.id}`);
-    window.Echo.leave(`team.1`);
-  }
-});
+onMounted(fetchContacts);
 </script>
 
 <template>
   <div class="flex h-screen bg-gray-900 text-amber-100">
-    <!-- Lateral Esquerda: Lista de usuários/grupos -->
+    <!-- Lista de Contatos -->
     <div class="w-1/4 border-r border-amber-100/20 p-4 overflow-y-auto">
       <h2 class="text-xl font-bold mb-4">Conversas</h2>
-      <div v-if="!isLoading">
-        <div class="mb-4">
-          <h3 class="text-sm font-semibold text-amber-100/70 mb-2">Usuários Online ({{ onlineUsers.length }})</h3>
-          <div v-for="user in onlineUsers" :key="user.id" class="flex items-center gap-2 mb-1">
-            <div class="h-2 w-2 rounded-full bg-green-500"></div>
-            <span>{{ user.name }}</span>
-          </div>
-        </div>
 
-        <ul>
-          <li
-            v-for="chat in usersAndGroups"
-            :key="chat.id"
-            @click="currentChat = chat"
-            class="p-3 hover:bg-amber-100/10 rounded-md cursor-pointer"
-            :class="{ 'bg-amber-100/20': currentChat?.id === chat.id }"
+      <ul v-if="!isLoading">
+        <li
+          v-for="contact in orderedContacts"
+          :key="`${contact.type}-${contact.id}`"
+          @click="fetchMessages(contact)"
+          class="p-3 hover:bg-amber-100/10 rounded-md cursor-pointer flex items-center gap-3"
+          :class="{
+            'bg-amber-100/20': currentChat?.id === contact.id && currentChat?.type === contact.type,
+            'text-green-400': contact.type === 'bot'
+          }"
+        >
+          <img
+            :src="contact.avatar || 'https://via.placeholder.com/50'"
+            class="w-8 h-8 rounded-full object-cover"
+          />
+
+          <div class="flex-1 min-w-0">
+            <p class="truncate font-medium">{{ contact.name }}</p>
+            <p class="text-xs text-amber-100/50 truncate">
+              {{ contact.type === 'team' ? 'Grupo FURIA' :
+              contact.type === 'bot' ? 'Chat Bot' : 'Usuário' }}
+            </p>
+          </div>
+
+          <span
+            v-if="contact.unread_count > 0"
+            class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"
           >
-            {{ chat.name }}
-            <span class="text-xs block text-amber-100/50">{{ chat.type === 'group' ? 'Grupo' : 'Usuário' }}</span>
-          </li>
-        </ul>
-      </div>
+            {{ contact.unread_count }}
+          </span>
+        </li>
+      </ul>
+
       <div v-else class="flex justify-center py-8">
+        <!-- Spinner -->
         <svg class="animate-spin h-6 w-6 text-amber-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -157,17 +158,21 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Lateral Direita: Área de mensagens -->
+    <!-- Área de Chat -->
     <div class="flex-1 flex flex-col">
-      <!-- Cabeçalho do chat -->
-      <div v-if="currentChat" class="border-b border-amber-100/20 p-4">
-        <h3 class="font-bold">{{ currentChat.name }}</h3>
-        <p class="text-sm text-amber-100/50">
-          {{ currentChat.type === 'group' ? 'Grupo' : 'Chat privado' }}
-          <span v-if="currentChat.type === 'group'" class="ml-2">
-            ({{ onlineUsers.length }} online)
-          </span>
-        </p>
+      <!-- Cabeçalho -->
+      <div v-if="currentChat" class="border-b border-amber-100/20 p-4 flex items-center gap-3">
+        <img
+          :src="currentChat.avatar || 'https://via.placeholder.com/50'"
+          class="w-10 h-10 rounded-full object-cover"
+        />
+        <div>
+          <h3 class="font-bold">{{ currentChat.name }}</h3>
+          <p class="text-sm text-amber-100/50">
+            {{ currentChat.type === 'team' ? 'Grupo FURIA' :
+            currentChat.type === 'bot' ? 'Chat com o Bot' : 'Chat privado' }}
+          </p>
+        </div>
       </div>
       <div v-else class="border-b border-amber-100/20 p-4">
         <h3 class="font-bold">Selecione uma conversa</h3>
@@ -179,15 +184,25 @@ onUnmounted(() => {
           <div
             v-for="message in messages"
             :key="message.id"
-            class="mb-4"
-            :class="{ 'ml-8': message.sender_id === authUser.id }"
+            class="mb-4 flex gap-3"
+            :class="{ 'flex-row-reverse': message.is_own }"
           >
-            <div class="font-bold">
-              {{ message.sender_id === authUser.id ? 'Você' : message.sender_name }}
-              <span v-if="message.is_bot" class="text-xs bg-amber-100/20 px-2 py-1 rounded ml-2">BOT</span>
+            <img
+              :src="message.sender_avatar || 'https://via.placeholder.com/40'"
+              class="w-8 h-8 rounded-full object-cover mt-1"
+            />
+            <div :class="{ 'text-right': message.is_own }">
+              <div class="font-bold flex items-center gap-2" :class="{ 'justify-end': message.is_own }">
+                {{ message.sender_name }}
+                <span v-if="message.is_bot" class="text-xs bg-amber-100/20 px-2 py-0.5 rounded">BOT</span>
+              </div>
+              <p class="bg-amber-100/10 p-2 rounded-lg inline-block max-w-[80%]">
+                {{ message.content }}
+              </p>
+              <span class="text-xs text-amber-100/50 block mt-1">
+                {{ new Date(message.created_at).toLocaleTimeString() }}
+              </span>
             </div>
-            <p>{{ message.content }}</p>
-            <span class="text-xs text-amber-100/50">{{ new Date(message.timestamp).toLocaleTimeString() }}</span>
           </div>
         </div>
         <div v-else class="h-full flex items-center justify-center text-amber-100/50">

@@ -32,6 +32,11 @@ apenas o *FURIA TEAM*;
   - php 8.4
   - VueJS 3
   - InertiaJs
+  - Postman - teste das APIs (a doc foi exportada e se encontra na raiz do projeto: furia-webchat.postman_collection.json)
+
+#### Postman
+A coleção do postmam pode ser importada para teste das APIs, é necessário criar um env com as seguintes variáveis:
+url (http://127.0.0.1:8000/api) e token;
 
 - ### Instalar dependencias e configurar banco de dados:
   - Composer no diretorio raiz: ``composer install`` 

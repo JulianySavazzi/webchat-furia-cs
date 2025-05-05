@@ -1,10 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiClient from '@/services/apiClient';
+import {useAuthStore} from '@/stores/useAuthStore';
+
+const authStore = useAuthStore()
+// const userNow = authStore.user
 
 // Estados
 const allUsers = ref([]);
-const teamData = ref(null); // Dados do time FURIA CS
+const teamData = ref(null);
 const currentChat = ref(null);
 const messages = ref([]);
 const newMessage = ref('');
@@ -14,14 +18,13 @@ const isLoading = ref(false);
 const orderedContacts = computed(() => {
   const contacts = [];
 
-  // 1. Adiciona o time FURIA CS (se existir)
+  // 1. Adiciona o time FURIA CS
   if (teamData.value) {
     contacts.push({
       id: teamData.value.id,
       name: teamData.value.name,
       type: 'team',
-      avatar: teamData.value.logo || 'https://via.placeholder.com/50',
-      unread_count: 0 // Você pode ajustar isso
+      avatar: teamData.value.logo || 'https://via.placeholder.com/50'
     });
   }
 
@@ -30,8 +33,7 @@ const orderedContacts = computed(() => {
   if (bot) {
     contacts.push({
       ...bot,
-      type: 'bot',
-      unread_count: 0
+      type: 'bot'
     });
   }
 
@@ -39,8 +41,7 @@ const orderedContacts = computed(() => {
   const otherUsers = allUsers.value.filter(user => user.id !== 1);
   contacts.push(...otherUsers.map(user => ({
     ...user,
-    type: 'user',
-    unread_count: 0
+    type: 'user'
   })));
 
   return contacts;
@@ -51,7 +52,7 @@ const fetchContacts = async () => {
   try {
     isLoading.value = true;
 
-    // Busca todos os usuários (incluindo o bot)
+    // Busca todos os usuários
     const usersResponse = await apiClient.get('user');
     allUsers.value = usersResponse.data;
     console.log(allUsers)
@@ -68,8 +69,6 @@ const fetchContacts = async () => {
 };
 
 // Busca mensagens do chat selecionado
-//chat/messages/id-user-to
-//chat/messages/team/id-team
 const fetchMessages = async (chat) => {
   currentChat.value = chat;
   try {
@@ -85,8 +84,6 @@ const fetchMessages = async (chat) => {
 };
 
 // Envia mensagem
-//chat/messages/id-user-to
-//chat/messages/team/id-team
 const sendMessage = async () => {
   if (!newMessage.value.trim() || !currentChat.value) return;
 
@@ -139,18 +136,10 @@ onMounted(fetchContacts);
               contact.type === 'bot' ? 'Chat Bot' : 'Usuário' }}
             </p>
           </div>
-
-          <span
-            v-if="contact.unread_count > 0"
-            class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"
-          >
-            {{ contact.unread_count }}
-          </span>
         </li>
       </ul>
 
       <div v-else class="flex justify-center py-8">
-        <!-- Spinner -->
         <svg class="animate-spin h-6 w-6 text-amber-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -180,28 +169,46 @@ onMounted(fetchContacts);
 
       <!-- Mensagens -->
       <div class="flex-1 p-4 overflow-y-auto">
-        <div v-if="currentChat">
+        <div v-if="currentChat" class="space-y-4">
           <div
             v-for="message in messages"
             :key="message.id"
-            class="mb-4 flex gap-3"
-            :class="{ 'flex-row-reverse': message.is_own }"
+            :class="{ 'flex justify-end': message.is_own, 'flex justify-start': !message.is_own }"
           >
-            <img
-              :src="message.sender_avatar || 'https://via.placeholder.com/40'"
-              class="w-8 h-8 rounded-full object-cover mt-1"
-            />
-            <div :class="{ 'text-right': message.is_own }">
-              <div class="font-bold flex items-center gap-2" :class="{ 'justify-end': message.is_own }">
-                {{ message.sender_name }}
-                <span v-if="message.is_bot" class="text-xs bg-amber-100/20 px-2 py-0.5 rounded">BOT</span>
+            <div
+              class="flex gap-3 max-w-[80%]"
+              :class="{ 'flex-row-reverse': message.is_own }"
+            >
+              <img
+                v-if="!message.is_own"
+                :src="message.sender_avatar || 'https://via.placeholder.com/40'"
+                class="w-8 h-8 rounded-full object-cover mt-1"
+              />
+
+              <div
+                class="flex flex-col"
+                :class="{ 'items-end': message.is_own, 'items-start': !message.is_own }"
+              >
+                <div class="font-bold flex items-center gap-2">
+                  <span v-if="!message.is_own">{{ message.sender_name }}</span>
+                  <span v-if="message.is_bot" class="text-xs bg-amber-100/20 px-2 py-0.5 rounded">BOT</span>
+                  <span v-if="message.is_own">Você</span>
+                </div>
+
+                <p
+                  class="p-3 rounded-lg"
+                  :class="{
+                    'bg-amber-100/20': !message.is_own,
+                    'bg-amber-100 text-black': message.is_own
+                  }"
+                >
+                  {{ message.content }}
+                </p>
+
+                <span class="text-xs text-amber-100/50 mt-1">
+                  {{ new Date(message.created_at).toLocaleTimeString() }}
+                </span>
               </div>
-              <p class="bg-amber-100/10 p-2 rounded-lg inline-block max-w-[80%]">
-                {{ message.content }}
-              </p>
-              <span class="text-xs text-amber-100/50 block mt-1">
-                {{ new Date(message.created_at).toLocaleTimeString() }}
-              </span>
             </div>
           </div>
         </div>

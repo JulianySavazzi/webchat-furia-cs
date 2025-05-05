@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Events\NewChatMessage;
+use App\Events\NewChatTeamMessage;
 use App\Helper\MessageHelper;
 use App\Models\Interaction;
 use App\Models\Message;
@@ -60,11 +62,20 @@ class MessageService
         $message->userTo()->associate($userTo);
         $message->save();
 
-        if($message->user_to == 1) {
+        if ($message->user_to == 1) {
             $data['case'] = $data['case'] ?? $message->content;
             $data['to'] = 'user';
             $this->botReplyMessage($message->user_from, $data);
         }
+
+        //event dispacther broadcast reverb
+        event(new NewChatMessage(
+            $message->user_from,
+            $message->user_to,
+            $message->content,
+            Carbon::now()->toDateTimeString(),
+            $message->id
+        ));
 
         return $message;
     }
@@ -99,7 +110,7 @@ class MessageService
         $message->userFrom()->associate($userFrom);
         $message->team()->associate($idTeam);
 
-        if(Str::contains($message->content, '@furia_bot')) {
+        if (Str::contains($message->content, '@furia_bot')) {
             $data['case'] = $data['case'] ?? $message->content;
             $data['to'] = 'team';
             $data['message'] = MessageHelper::templateBotReplyTeamMessages($data['case'], $data) ?? '';
@@ -107,6 +118,16 @@ class MessageService
         }
 
         $message->save();
+
+        event(new NewChatTeamMessage(
+            $idTeam,
+            $userFrom->id,
+            $userFrom->username,
+            $message->content,
+            Carbon::now()->toDateTimeString(),
+            $message->id
+        ));
+
         return $message;
     }
 

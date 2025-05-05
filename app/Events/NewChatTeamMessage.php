@@ -10,27 +10,31 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewChatTeamMessage
+class NewChatTeamMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(
+        public int $teamId,
+        public int $senderId,
+        public string $senderName,
+        public string $content,
+        public string $timestamp,
+        public ?int $messageId = null
+    )
     {
-        //
     }
 
     /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return PresenceChannel[]
      */
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PresenceChannel("team.chat.$this->teamId"),
         ];
     }
 

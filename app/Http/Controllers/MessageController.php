@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewChatMessage;
 use App\Services\MessageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -51,7 +52,6 @@ class MessageController extends Controller
         ]);
         try {
             $send = $this->messageService->sendMessage($userTo, $data);
-            //TODO event dispacther broadcast reverb
             return response()->json($send, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao enviar mensagens.', 'error' => $e->getMessage()],
@@ -92,7 +92,6 @@ class MessageController extends Controller
         ]);
         try {
             $send = $this->messageService->sendTeamMessage($team, $data);
-            //TODO event dispacther broadcast reverb
             return response()->json($send, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao enviar mensagens.', 'error' => $e->getMessage()],

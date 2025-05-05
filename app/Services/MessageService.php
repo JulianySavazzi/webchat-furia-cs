@@ -69,13 +69,13 @@ class MessageService
         }
 
         //event dispacther broadcast reverb
-        event(new NewChatMessage(
-            $message->user_from,
-            $message->user_to,
-            $message->content,
-            Carbon::now()->toDateTimeString(),
-            $message->id
-        ));
+//        event(new NewChatMessage(
+//            $message->user_from,
+//            $message->user_to,
+//            $message->content,
+//            Carbon::now()->toDateTimeString(),
+//            $message->id
+//        ));
 
         return $message;
     }
@@ -119,14 +119,14 @@ class MessageService
 
         $message->save();
 
-        event(new NewChatTeamMessage(
-            $idTeam,
-            $userFrom->id,
-            $userFrom->username,
-            $message->content,
-            Carbon::now()->toDateTimeString(),
-            $message->id
-        ));
+//        event(new NewChatTeamMessage(
+//            $idTeam,
+//            $userFrom->id,
+//            $userFrom->username,
+//            $message->content,
+//            Carbon::now()->toDateTimeString(),
+//            $message->id
+//        ));
 
         return $message;
     }
